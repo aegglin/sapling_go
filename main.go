@@ -9,6 +9,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+const (
+	screenWidth  = 960
+	screenHeight = 540
+)
+
 var img *ebiten.Image
 
 func init() {
@@ -43,7 +48,7 @@ func main() {
 	// if err != nil {
 	// 	panic(err)
 	// }
-	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Render an image")
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
