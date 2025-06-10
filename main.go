@@ -1,13 +1,11 @@
 package main
 
-// import "github.com/hajimehoshi/ebiten/v2"
 import (
-	"bytes"
-	"image"
 	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -16,47 +14,53 @@ const (
 )
 
 var (
-	leftSprite      *ebiten.Image
-	rightSprite     *ebiten.Image
-	upSprite        *ebiten.Image
-	downSprite      *ebiten.Image
-	backgroundImage *ebiten.Image
+	leftSprite1  *ebiten.Image
+	rightSprite1 *ebiten.Image
+	upSprite1    *ebiten.Image
+	downSprite1  *ebiten.Image
+	// leftSprite2     *ebiten.Image
+	// rightSprite2    *ebiten.Image
+	// upSprite2       *ebiten.Image
+	// downSprite2     *ebiten.Image
+	// backgroundImage *ebiten.Image
 )
 
 func init() {
-	// var err error
-
-	img, _, err := image.Decode(bytes.NewReader("BeetleRight1_png"))
+	var err error
+	leftSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleLeft1.png")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	rightSprite = ebiten.NewImageFromImage(img)
-
-	img, _, err = image.Decode(bytes.NewReader("BeetleLeft1_png"))
+	rightSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleRight1.png")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	leftSprite = ebiten.NewImageFromImage(img)
-
-	img, _, err = image.Decode(bytes.NewReader("BeetleDown1_png"))
+	upSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleUp1.png")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	downSprite = ebiten.NewImageFromImage(img)
-
-	img, _, err = image.Decode(bytes.NewReader("BeetleRight1_png"))
+	downSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleDown1.png")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	rightSprite = ebiten.NewImageFromImage(img)
-}
 
-// the character has x, y, vx, and vy
-type character struct {
-	x  int
-	y  int
-	vx int
-	vy int
+	// leftSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleLeft2.png")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// rightSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleRight2.png")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// upSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleUp2.png")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// downSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleDown2.png")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 }
 
 type Direction int
@@ -68,6 +72,16 @@ const (
 	Right
 )
 
+// the character has x, y, vx, and vy
+type character struct {
+	// x             int
+	// y             int
+	// vx            int
+	// vy            int
+	direction     Direction
+	currentSprite *ebiten.Image
+}
+
 // thte game has the main character beetle
 type Game struct {
 	beetle *character
@@ -75,26 +89,30 @@ type Game struct {
 
 func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-
+		g.beetle.direction = Left
+		g.beetle.currentSprite = leftSprite1
 	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-
+		g.beetle.direction = Right
+		g.beetle.currentSprite = rightSprite1
 	} else if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-
+		g.beetle.direction = Up
+		g.beetle.currentSprite = upSprite1
 	} else if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-
+		g.beetle.direction = Down
+		g.beetle.currentSprite = downSprite1
 	}
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// ebitenutil.DebugPrint(screen, "Hello, World!")
-	screen.DrawImage(img, nil)
+	screen.DrawImage(g.beetle.currentSprite, nil)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	// return outsideWidth, outsideHeight
 	// return 320, 240
-	return screenWidth, screenHeight
+	return 320, 240
 }
 
 func main() {
@@ -106,7 +124,10 @@ func main() {
 	// }
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Render an image")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	g := Game{}
+	beetle := character{}
+	g.beetle = &beetle
+	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
 	}
 }
