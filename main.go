@@ -9,20 +9,26 @@ import (
 )
 
 const (
-	screenWidth  = 960
-	screenHeight = 540
+	rawPixelSize = 16
+	scale        = 3
+	maxScreenCol = 16
+	maxScreenRow = 12
+	fps          = 60
+	tileSize     = rawPixelSize * scale
+	screenWidth  = tileSize * maxScreenCol
+	screenHeight = tileSize * maxScreenRow
 )
 
 var (
-	leftSprite1  *ebiten.Image
-	rightSprite1 *ebiten.Image
-	upSprite1    *ebiten.Image
-	downSprite1  *ebiten.Image
-	// leftSprite2     *ebiten.Image
-	// rightSprite2    *ebiten.Image
-	// upSprite2       *ebiten.Image
-	// downSprite2     *ebiten.Image
-	// backgroundImage *ebiten.Image
+	leftSprite1     *ebiten.Image
+	rightSprite1    *ebiten.Image
+	upSprite1       *ebiten.Image
+	downSprite1     *ebiten.Image
+	leftSprite2     *ebiten.Image
+	rightSprite2    *ebiten.Image
+	upSprite2       *ebiten.Image
+	downSprite2     *ebiten.Image
+	backgroundImage *ebiten.Image
 )
 
 func init() {
@@ -44,22 +50,22 @@ func init() {
 		log.Fatal(err)
 	}
 
-	// leftSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleLeft2.png")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// rightSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleRight2.png")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// upSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleUp2.png")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// downSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleDown2.png")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	leftSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleLeft2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	rightSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleRight2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	upSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleUp2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	downSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleDown2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 }
 
@@ -74,10 +80,9 @@ const (
 
 // the character has x, y, vx, and vy
 type character struct {
-	// x             int
-	// y             int
-	// vx            int
-	// vy            int
+	x             int
+	y             int
+	speed         int
 	direction     Direction
 	currentSprite *ebiten.Image
 }
@@ -88,6 +93,11 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
+
+	if g.beetle == nil {
+		g.beetle = &character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
+	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		g.beetle.direction = Left
 		g.beetle.currentSprite = leftSprite1
@@ -125,7 +135,7 @@ func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Render an image")
 	g := Game{}
-	beetle := character{}
+	beetle := character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
 	g.beetle = &beetle
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
