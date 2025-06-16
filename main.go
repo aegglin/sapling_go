@@ -9,14 +9,16 @@ import (
 )
 
 const (
-	rawPixelSize = 16
-	scale        = 3
-	maxScreenCol = 16
-	maxScreenRow = 12
-	fps          = 60
-	tileSize     = rawPixelSize * scale
-	screenWidth  = tileSize * maxScreenCol
-	screenHeight = tileSize * maxScreenRow
+	rawPixelSize   = 16
+	scale          = 3
+	maxScreenCol   = 16
+	maxScreenRow   = 12
+	fps            = 60
+	imageDimension = 512
+	tileSize       = rawPixelSize * scale
+	gameWidth      = tileSize * maxScreenCol
+	gameHeight     = tileSize * maxScreenRow
+	imageScale     = float64(tileSize) / imageDimension
 )
 
 var (
@@ -66,7 +68,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 type Direction int
@@ -116,24 +117,21 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// ebitenutil.DebugPrint(screen, "Hello, World!")
-	screen.DrawImage(g.beetle.currentSprite, nil)
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(imageScale, imageScale)
+
+	screen.DrawImage(g.beetle.currentSprite, op)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	// return outsideWidth, outsideHeight
-	// return 320, 240
-	return 320, 240
+	return gameWidth, gameHeight
 }
 
 func main() {
-	// g := &Game{}
 
-	// err := ebiten.RunGame(g)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("Render an image")
+	ebiten.SetWindowSize(gameWidth, gameHeight)
+	ebiten.SetWindowTitle("Sapling by Aiden Egglin")
 	g := Game{}
 	beetle := character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
 	g.beetle = &beetle
