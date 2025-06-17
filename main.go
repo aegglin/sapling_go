@@ -4,6 +4,9 @@ import (
 	_ "image/png"
 	"log"
 
+	"fmt"
+	"os"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
@@ -35,39 +38,49 @@ var (
 
 func init() {
 	var err error
-	leftSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleLeft1.png")
+
+	upSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	rightSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleRight1.png")
+	downSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleDown1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	upSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleUp1.png")
+	rightSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleRight1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	downSprite1, _, err = ebitenutil.NewImageFromFile("assets/BeetleDown1.png")
+	leftSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleLeft1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	leftSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleLeft2.png")
+	upSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	rightSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleRight2.png")
+	downSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleDown2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	upSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleUp2.png")
+	rightSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleRight2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	downSprite2, _, err = ebitenutil.NewImageFromFile("assets/BeetleDown2.png")
+	leftSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleLeft2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func loadTileImages() {
+	contents, err := os.ReadFile("map.txt")
+	if err != nil {
+		fmt.Println("Error reading file: ", err)
+		return
+	}
+	fmt.Println(string(contents))
 }
 
 type Direction int
@@ -98,19 +111,35 @@ func (g *Game) Update() error {
 	if g.beetle == nil {
 		g.beetle = &character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
 	}
-
-	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		g.beetle.direction = Left
-		g.beetle.currentSprite = leftSprite1
-	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		g.beetle.direction = Right
-		g.beetle.currentSprite = rightSprite1
-	} else if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
+	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		g.beetle.direction = Up
 		g.beetle.currentSprite = upSprite1
+		g.beetle.y -= g.beetle.speed
+		if g.beetle.y < 0 {
+			g.beetle.y = 0
+		}
 	} else if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
 		g.beetle.direction = Down
 		g.beetle.currentSprite = downSprite1
+		g.beetle.y += g.beetle.speed
+		if g.beetle.y+tileSize > gameHeight {
+			g.beetle.y = gameHeight - tileSize
+		}
+
+	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+		g.beetle.direction = Right
+		g.beetle.currentSprite = rightSprite1
+		g.beetle.x += g.beetle.speed
+		if g.beetle.x+tileSize > gameWidth {
+			g.beetle.x = gameWidth - tileSize
+		}
+	} else if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+		g.beetle.direction = Left
+		g.beetle.currentSprite = leftSprite1
+		g.beetle.x -= g.beetle.speed
+		if g.beetle.x < 0 {
+			g.beetle.x = 0
+		}
 	}
 	return nil
 }
@@ -120,7 +149,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(imageScale, imageScale)
-
+	op.GeoM.Translate(float64(g.beetle.x), float64(g.beetle.y))
 	screen.DrawImage(g.beetle.currentSprite, op)
 }
 
