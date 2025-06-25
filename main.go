@@ -6,22 +6,25 @@ import (
 
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
-	rawPixelSize   = 16
-	scale          = 3
-	maxScreenCol   = 16
-	maxScreenRow   = 12
-	fps            = 60
-	imageDimension = 512
-	tileSize       = rawPixelSize * scale
-	gameWidth      = tileSize * maxScreenCol
-	gameHeight     = tileSize * maxScreenRow
-	imageScale     = float64(tileSize) / imageDimension
+	rawPixelSize    = 16
+	scale           = 3
+	maxScreenCol    = 16
+	maxScreenRow    = 12
+	fps             = 60
+	imageDimension  = 512
+	tileSize        = rawPixelSize * scale
+	gameWidth       = tileSize * maxScreenCol
+	gameHeight      = tileSize * maxScreenRow
+	imageScale      = float64(tileSize) / imageDimension
+	numWorldColumns = 50
+	numWorldRows    = 50
 )
 
 var (
@@ -72,15 +75,89 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	loadTileImages()
+	loadMap()
 }
 
+var (
+	grass           *ebiten.Image
+	tree1           *ebiten.Image
+	tree2           *ebiten.Image
+	tree3           *ebiten.Image
+	shrub           *ebiten.Image
+	underbrush      *ebiten.Image
+	shrubUnderbrush *ebiten.Image
+	orangeFlower    *ebiten.Image
+	treeFlies1      *ebiten.Image
+	treeBeehive1    *ebiten.Image
+	treeWoodpecker1 *ebiten.Image
+)
+
 func loadTileImages() {
-	contents, err := os.ReadFile("map.txt")
+	var err error
+	grass, _, err = ebitenutil.NewImageFromFile("assets/tiles/Grass.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	tree1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	tree2, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	tree3, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree3.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	shrub, _, err = ebitenutil.NewImageFromFile("assets/tiles/Shrub.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	underbrush, _, err = ebitenutil.NewImageFromFile("assets/tiles/Underbrush.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	orangeFlower, _, err = ebitenutil.NewImageFromFile("assets/tiles/OrangeFlower.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	treeFlies1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1_Flies1.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	treeBeehive1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1_Beehive1.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	treeWoodpecker1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1_Woodpecker1.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func loadMap() {
+	contents, err := os.ReadFile("assets/maps/map1.txt")
 	if err != nil {
 		fmt.Println("Error reading file: ", err)
 		return
 	}
-	fmt.Println(string(contents))
+	map_text := string(contents)
+	// fmt.Println(map_text)
+	for i := 0; i < numWorldColumns; i++ {
+		line := strings.Split(map_text, "\n")
+
+		for _, v := range line {
+			number := strings.Split(v, " ")
+			fmt.Println(number)
+		}
+
+	}
+	// for i := 0; i < numWorldColumns; i++ {
+	// 	numbers := strings.Split(map_text, " ")
+	// 	fmt.Println(numbers)
+	// }
 }
 
 type Direction int
@@ -101,9 +178,11 @@ type character struct {
 	currentSprite *ebiten.Image
 }
 
-// thte game has the main character beetle
+// the game has the main character beetle and the tiles
 type Game struct {
-	beetle *character
+	beetle         *character
+	mapTileNumbers [][]int
+	mapTiles       []MapTile
 }
 
 func (g *Game) Update() error {
