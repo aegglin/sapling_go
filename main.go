@@ -4,6 +4,7 @@ import (
 	"image/color"
 	_ "image/png"
 	"log"
+	"strconv"
 
 	"fmt"
 	"os"
@@ -141,7 +142,7 @@ func loadTileImages() {
 	}
 }
 
-func loadMap() {
+func loadMap(g *Game) {
 	contents, err := os.ReadFile("assets/maps/map1.txt")
 	if err != nil {
 		fmt.Println("Error reading file: ", err)
@@ -150,16 +151,15 @@ func loadMap() {
 	map_text := string(contents)
 	lines := strings.Split(map_text, "\n")
 
-	for i, v := range lines {
-		if i < 2 {
-			numbers := strings.Split(v, ' ')
-			fmt.Println()
+	for r, line := range lines {
+		numbers := strings.Split(line, " ")
+		for c, number := range numbers {
+			g.mapTileNumbers[r][c], err = strconv.Atoi(number)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
-
 	}
-
-	fmt.Printf("%T", lines)
-
 }
 
 type Direction int
@@ -185,8 +185,8 @@ type character struct {
 
 // the game has the main character beetle and the tiles
 type Game struct {
-	beetle *character
-	// mapTileNumbers [][]int
+	beetle         *character
+	mapTileNumbers [][]int
 	// mapTiles       []MapTile
 }
 
