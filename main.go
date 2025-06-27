@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	_ "image/png"
 	"log"
 
@@ -28,18 +29,24 @@ const (
 )
 
 var (
-	leftSprite1     *ebiten.Image
-	rightSprite1    *ebiten.Image
-	upSprite1       *ebiten.Image
-	downSprite1     *ebiten.Image
-	leftSprite2     *ebiten.Image
-	rightSprite2    *ebiten.Image
-	upSprite2       *ebiten.Image
-	downSprite2     *ebiten.Image
-	backgroundImage *ebiten.Image
+	leftSprite1  *ebiten.Image
+	rightSprite1 *ebiten.Image
+	upSprite1    *ebiten.Image
+	downSprite1  *ebiten.Image
+	leftSprite2  *ebiten.Image
+	rightSprite2 *ebiten.Image
+	upSprite2    *ebiten.Image
+	downSprite2  *ebiten.Image
 )
 
 func init() {
+
+	loadTileImages()
+	loadMap()
+	loadBeetleImages()
+}
+
+func loadBeetleImages() {
 	var err error
 
 	upSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp1.png")
@@ -58,7 +65,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	upSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp2.png")
 	if err != nil {
 		log.Fatal(err)
@@ -75,8 +81,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	loadTileImages()
-	loadMap()
 }
 
 var (
@@ -144,20 +148,18 @@ func loadMap() {
 		return
 	}
 	map_text := string(contents)
-	// fmt.Println(map_text)
-	for i := 0; i < numWorldColumns; i++ {
-		line := strings.Split(map_text, "\n")
+	lines := strings.Split(map_text, "\n")
 
-		for _, v := range line {
-			number := strings.Split(v, " ")
-			fmt.Println(number)
+	for i, v := range lines {
+		if i < 2 {
+			numbers := strings.Split(v, ' ')
+			fmt.Println()
 		}
 
 	}
-	// for i := 0; i < numWorldColumns; i++ {
-	// 	numbers := strings.Split(map_text, " ")
-	// 	fmt.Println(numbers)
-	// }
+
+	fmt.Printf("%T", lines)
+
 }
 
 type Direction int
@@ -171,25 +173,29 @@ const (
 
 // the character has x, y, vx, and vy
 type character struct {
-	x             int
-	y             int
-	speed         int
-	direction     Direction
-	currentSprite *ebiten.Image
+	x                          int
+	y                          int
+	speed                      int
+	direction                  Direction
+	currentSprite              *ebiten.Image
+	currentSpriteNumber        int
+	spriteUpdateFrameCount     int
+	spriteFrameSwitchThreshold int
 }
 
 // the game has the main character beetle and the tiles
 type Game struct {
-	beetle         *character
-	mapTileNumbers [][]int
-	mapTiles       []MapTile
+	beetle *character
+	// mapTileNumbers [][]int
+	// mapTiles       []MapTile
 }
 
 func (g *Game) Update() error {
 
 	if g.beetle == nil {
-		g.beetle = &character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
+		g.beetle = &character{x: 50, y: 50, direction: Down, speed: 4, currentSprite: downSprite1, currentSpriteNumber: 1, spriteUpdateFrameCount: 0, spriteFrameSwitchThreshold: 12}
 	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		g.beetle.direction = Up
 		g.beetle.currentSprite = upSprite1
@@ -220,15 +226,54 @@ func (g *Game) Update() error {
 			g.beetle.x = 0
 		}
 	}
+
+	g.beetle.spriteUpdateFrameCount++
+	if g.beetle.spriteUpdateFrameCount > g.beetle.spriteFrameSwitchThreshold {
+		if g.beetle.currentSpriteNumber == 1 {
+			g.beetle.currentSpriteNumber = 2
+		} else if g.beetle.currentSpriteNumber == 2 {
+			g.beetle.currentSpriteNumber = 1
+		}
+		g.beetle.spriteUpdateFrameCount = 0
+	}
+
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// ebitenutil.DebugPrint(screen, "Hello, World!")
 
+	switch g.beetle.direction {
+	case Up:
+		if g.beetle.currentSpriteNumber == 1 {
+			g.beetle.currentSprite = upSprite1
+		} else if g.beetle.currentSpriteNumber == 2 {
+			g.beetle.currentSprite = upSprite2
+		}
+	case Down:
+		if g.beetle.currentSpriteNumber == 1 {
+			g.beetle.currentSprite = downSprite1
+		} else if g.beetle.currentSpriteNumber == 2 {
+			g.beetle.currentSprite = downSprite2
+		}
+	case Right:
+		if g.beetle.currentSpriteNumber == 1 {
+			g.beetle.currentSprite = rightSprite1
+		} else if g.beetle.currentSpriteNumber == 2 {
+			g.beetle.currentSprite = rightSprite2
+		}
+	case Left:
+		if g.beetle.currentSpriteNumber == 1 {
+			g.beetle.currentSprite = leftSprite1
+		} else if g.beetle.currentSpriteNumber == 2 {
+			g.beetle.currentSprite = leftSprite2
+		}
+	}
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(imageScale, imageScale)
 	op.GeoM.Translate(float64(g.beetle.x), float64(g.beetle.y))
+	screen.Fill(color.White)
 	screen.DrawImage(g.beetle.currentSprite, op)
 }
 
