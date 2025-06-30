@@ -41,9 +41,7 @@ var (
 )
 
 func init() {
-
 	loadTileImages()
-	loadMap()
 	loadBeetleImages()
 }
 
@@ -149,11 +147,12 @@ func loadMap(g *Game) {
 		return
 	}
 	map_text := string(contents)
-	lines := strings.Split(map_text, "\n")
+	lines := strings.Split(map_text, "\r")
 
 	for r, line := range lines {
 		numbers := strings.Split(line, " ")
 		for c, number := range numbers {
+			fmt.Printf("At %d, %d, the number is: %s\n", r, c, number)
 			g.mapTileNumbers[r][c], err = strconv.Atoi(number)
 			if err != nil {
 				log.Fatal(err)
@@ -186,7 +185,7 @@ type character struct {
 // the game has the main character beetle and the tiles
 type Game struct {
 	beetle         *character
-	mapTileNumbers [][]int
+	mapTileNumbers [numWorldColumns][numWorldRows]int
 	// mapTiles       []MapTile
 }
 
@@ -285,9 +284,11 @@ func main() {
 
 	ebiten.SetWindowSize(gameWidth, gameHeight)
 	ebiten.SetWindowTitle("Sapling by Aiden Egglin")
-	g := Game{}
+
 	beetle := character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
-	g.beetle = &beetle
+	g := Game{beetle: &beetle}
+	loadMap(&g)
+
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
 	}
