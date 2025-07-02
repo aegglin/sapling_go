@@ -124,45 +124,50 @@ func (g *Game) Update() error {
 		g.beetle = &character{x: 50, y: 50, direction: Down, speed: 4, currentSprite: downSprite1, currentSpriteNumber: 1, spriteUpdateFrameCount: 0, spriteFrameSwitchThreshold: 12}
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		g.beetle.direction = Up
-		g.beetle.currentSprite = upSprite1
-		g.beetle.y -= g.beetle.speed
-		if g.beetle.y < 0 {
-			g.beetle.y = 0
-		}
-	} else if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		g.beetle.direction = Down
-		g.beetle.currentSprite = downSprite1
-		g.beetle.y += g.beetle.speed
-		if g.beetle.y+tileSize > gameHeight {
-			g.beetle.y = gameHeight - tileSize
+	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) ||
+		ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) ||
+		ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) ||
+		ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+
+		if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
+			g.beetle.direction = Up
+			g.beetle.currentSprite = upSprite1
+			g.beetle.y -= g.beetle.speed
+			if g.beetle.y < 0 {
+				g.beetle.y = 0
+			}
+		} else if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
+			g.beetle.direction = Down
+			g.beetle.currentSprite = downSprite1
+			g.beetle.y += g.beetle.speed
+			if g.beetle.y+tileSize > gameHeight {
+				g.beetle.y = gameHeight - tileSize
+			}
+		} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+			g.beetle.direction = Right
+			g.beetle.currentSprite = rightSprite1
+			g.beetle.x += g.beetle.speed
+			if g.beetle.x+tileSize > gameWidth {
+				g.beetle.x = gameWidth - tileSize
+			}
+		} else if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+			g.beetle.direction = Left
+			g.beetle.currentSprite = leftSprite1
+			g.beetle.x -= g.beetle.speed
+			if g.beetle.x < 0 {
+				g.beetle.x = 0
+			}
 		}
 
-	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		g.beetle.direction = Right
-		g.beetle.currentSprite = rightSprite1
-		g.beetle.x += g.beetle.speed
-		if g.beetle.x+tileSize > gameWidth {
-			g.beetle.x = gameWidth - tileSize
+		g.beetle.spriteUpdateFrameCount++
+		if g.beetle.spriteUpdateFrameCount > g.beetle.spriteFrameSwitchThreshold {
+			if g.beetle.currentSpriteNumber == 1 {
+				g.beetle.currentSpriteNumber = 2
+			} else if g.beetle.currentSpriteNumber == 2 {
+				g.beetle.currentSpriteNumber = 1
+			}
+			g.beetle.spriteUpdateFrameCount = 0
 		}
-	} else if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		g.beetle.direction = Left
-		g.beetle.currentSprite = leftSprite1
-		g.beetle.x -= g.beetle.speed
-		if g.beetle.x < 0 {
-			g.beetle.x = 0
-		}
-	}
-
-	g.beetle.spriteUpdateFrameCount++
-	if g.beetle.spriteUpdateFrameCount > g.beetle.spriteFrameSwitchThreshold {
-		if g.beetle.currentSpriteNumber == 1 {
-			g.beetle.currentSpriteNumber = 2
-		} else if g.beetle.currentSpriteNumber == 2 {
-			g.beetle.currentSpriteNumber = 1
-		}
-		g.beetle.spriteUpdateFrameCount = 0
 	}
 
 	return nil
@@ -214,7 +219,7 @@ func main() {
 	ebiten.SetWindowSize(gameWidth, gameHeight)
 	ebiten.SetWindowTitle("Sapling by Aiden Egglin")
 
-	beetle := character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
+	beetle := character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}
 	g := Game{beetle: &beetle}
 	mapTileHandler := MapTileHandler{}
 	mapTileHandler.LoadMap()
