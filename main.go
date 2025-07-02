@@ -4,11 +4,6 @@ import (
 	"image/color"
 	_ "image/png"
 	"log"
-	"strconv"
-
-	"fmt"
-	"os"
-	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -30,18 +25,17 @@ const (
 )
 
 var (
-	leftSprite1  *ebiten.Image
-	rightSprite1 *ebiten.Image
 	upSprite1    *ebiten.Image
 	downSprite1  *ebiten.Image
-	leftSprite2  *ebiten.Image
-	rightSprite2 *ebiten.Image
+	rightSprite1 *ebiten.Image
+	leftSprite1  *ebiten.Image
 	upSprite2    *ebiten.Image
 	downSprite2  *ebiten.Image
+	rightSprite2 *ebiten.Image
+	leftSprite2  *ebiten.Image
 )
 
 func init() {
-	loadTileImages()
 	loadBeetleImages()
 }
 
@@ -96,71 +90,6 @@ var (
 	treeWoodpecker1 *ebiten.Image
 )
 
-func loadTileImages() {
-	var err error
-	grass, _, err = ebitenutil.NewImageFromFile("assets/tiles/Grass.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	tree1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	tree2, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree2.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	tree3, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree3.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	shrub, _, err = ebitenutil.NewImageFromFile("assets/tiles/Shrub.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	underbrush, _, err = ebitenutil.NewImageFromFile("assets/tiles/Underbrush.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	orangeFlower, _, err = ebitenutil.NewImageFromFile("assets/tiles/OrangeFlower.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	treeFlies1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1_Flies1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	treeBeehive1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1_Beehive1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	treeWoodpecker1, _, err = ebitenutil.NewImageFromFile("assets/tiles/Tree1_Woodpecker1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func loadMap(g *Game) {
-	contents, err := os.ReadFile("assets/maps/map1.txt")
-	if err != nil {
-		fmt.Println("Error reading file: ", err)
-		return
-	}
-	map_text := string(contents)
-	lines := strings.Split(map_text, "\r")
-
-	for r, line := range lines {
-		numbers := strings.Split(line, " ")
-		for c, number := range numbers {
-			fmt.Printf("At %d, %d, the number is: %s\n", r, c, number)
-			g.mapTileNumbers[r][c], err = strconv.Atoi(number)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-	}
-}
-
 type Direction int
 
 const (
@@ -184,8 +113,8 @@ type character struct {
 
 // the game has the main character beetle and the tiles
 type Game struct {
-	beetle         *character
-	mapTileNumbers [numWorldColumns][numWorldRows]int
+	beetle *character
+	// mapTileNumbers [numWorldColumns][numWorldRows]int
 	// mapTiles       []MapTile
 }
 
@@ -287,7 +216,8 @@ func main() {
 
 	beetle := character{x: 50, y: 50, direction: Up, speed: 4, currentSprite: leftSprite1}
 	g := Game{beetle: &beetle}
-	loadMap(&g)
+	mapTileHandler := MapTileHandler{}
+	mapTileHandler.LoadMap()
 
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
