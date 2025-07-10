@@ -9,11 +9,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-type beetle struct {
+type Beetle struct {
 	character
 }
 
-func (beetle beetle) Update() error {
+func (beetle Beetle) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) ||
 		ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) ||
 		ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) ||
@@ -98,7 +98,7 @@ func loadImages() {
 	}
 }
 
-func (beetle beetle) Draw(screen *ebiten.Image) {
+func (beetle Beetle) Draw(screen *ebiten.Image) {
 	switch beetle.direction {
 	case Up:
 		if beetle.currentSpriteNumber == 1 {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	_ "image/png"
 	"log"
 
@@ -99,28 +98,12 @@ const (
 	Right
 )
 
-// the character has x, y, vx, and vy
-type character struct {
-	x                          int
-	y                          int
-	speed                      int
-	direction                  Direction
-	currentSprite              *ebiten.Image
-	currentSpriteNumber        int
-	spriteUpdateFrameCount     int
-	spriteFrameSwitchThreshold int
-}
-
 // the game has the main character beetle and the tiles
 type Game struct {
-	beetle *character
+	beetle *Beetle
 }
 
 func (g *Game) Update() error {
-
-	if g.beetle == nil {
-		g.beetle = &character{x: 50, y: 50, direction: Down, speed: 4, currentSprite: downSprite1, currentSpriteNumber: 1, spriteUpdateFrameCount: 0, spriteFrameSwitchThreshold: 12}
-	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) ||
 		ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) ||
@@ -173,39 +156,7 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// ebitenutil.DebugPrint(screen, "Hello, World!")
-
-	switch g.beetle.direction {
-	case Up:
-		if g.beetle.currentSpriteNumber == 1 {
-			g.beetle.currentSprite = upSprite1
-		} else if g.beetle.currentSpriteNumber == 2 {
-			g.beetle.currentSprite = upSprite2
-		}
-	case Down:
-		if g.beetle.currentSpriteNumber == 1 {
-			g.beetle.currentSprite = downSprite1
-		} else if g.beetle.currentSpriteNumber == 2 {
-			g.beetle.currentSprite = downSprite2
-		}
-	case Right:
-		if g.beetle.currentSpriteNumber == 1 {
-			g.beetle.currentSprite = rightSprite1
-		} else if g.beetle.currentSpriteNumber == 2 {
-			g.beetle.currentSprite = rightSprite2
-		}
-	case Left:
-		if g.beetle.currentSpriteNumber == 1 {
-			g.beetle.currentSprite = leftSprite1
-		} else if g.beetle.currentSpriteNumber == 2 {
-			g.beetle.currentSprite = leftSprite2
-		}
-	}
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(imageScale, imageScale)
-	op.GeoM.Translate(float64(g.beetle.x), float64(g.beetle.y))
-	screen.Fill(color.White)
-	screen.DrawImage(g.beetle.currentSprite, op)
+	g.beetle.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -216,8 +167,7 @@ func main() {
 
 	ebiten.SetWindowSize(gameWidth, gameHeight)
 	ebiten.SetWindowTitle("Sapling by Aiden Egglin")
-
-	beetle := character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}
+	beetle := Beetle{character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}}
 	g := Game{beetle: &beetle}
 	mapTileHandler := MapTileHandler{}
 	mapTileHandler.LoadMap()
