@@ -114,8 +114,6 @@ type character struct {
 // the game has the main character beetle and the tiles
 type Game struct {
 	beetle *character
-	// mapTileNumbers [numWorldColumns][numWorldRows]int
-	// mapTiles       []MapTile
 }
 
 func (g *Game) Update() error {
