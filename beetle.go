@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	_ "image/png"
 	"log"
 
@@ -13,7 +12,8 @@ type Beetle struct {
 	character
 }
 
-func (beetle Beetle) Update() error {
+func (beetle Beetle) Update() {
+
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) ||
 		ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) ||
 		ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) ||
@@ -58,10 +58,9 @@ func (beetle Beetle) Update() error {
 			beetle.spriteUpdateFrameCount = 0
 		}
 	}
-	return nil
 }
 
-func loadImages() {
+func (beetle Beetle) LoadImages() {
 	var err error
 
 	upSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp1.png")
@@ -129,6 +128,6 @@ func (beetle Beetle) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(imageScale, imageScale)
 	op.GeoM.Translate(float64(beetle.x), float64(beetle.y))
-	screen.Fill(color.White)
+	// screen.Fill(color.White)
 	screen.DrawImage(beetle.currentSprite, op)
 }

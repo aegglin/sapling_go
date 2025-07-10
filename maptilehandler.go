@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
@@ -116,4 +117,19 @@ func (mapTileHandler MapTileHandler) LoadTileImages() {
 	}
 	treeWoodpeckerTile := MapTile{Image: treeWoodpecker1, IsSolid: true}
 	mapTileHandler.mapTiles[10] = treeWoodpeckerTile
+}
+
+func (mapTileHandler MapTileHandler) DrawAll(screen *ebiten.Image) {
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(imageScale, imageScale)
+
+	for row := range numWorldRows {
+		for col := range numWorldColumns {
+			op.GeoM.Translate(float64(row), float64(col))
+			mapTileNumber := mapTileHandler.mapTileNumbers[row][col]
+			image := mapTileHandler.mapTiles[mapTileNumber]
+			screen.DrawImage(image.Image, op)
+		}
+	}
 }

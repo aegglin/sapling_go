@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -34,46 +33,7 @@ var (
 	leftSprite2  *ebiten.Image
 )
 
-func init() {
-	loadBeetleImages()
-}
-
-func loadBeetleImages() {
-	var err error
-
-	upSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	downSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleDown1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	rightSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleRight1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	leftSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleLeft1.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	upSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp2.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	downSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleDown2.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	rightSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleRight2.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	leftSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleLeft2.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+func init() {}
 
 var (
 	grass           *ebiten.Image
@@ -105,58 +65,13 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-
-	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) ||
-		ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) ||
-		ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) ||
-		ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-
-		if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-			g.beetle.direction = Up
-			g.beetle.currentSprite = upSprite1
-			g.beetle.y -= g.beetle.speed
-			if g.beetle.y < 0 {
-				g.beetle.y = 0
-			}
-		} else if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-			g.beetle.direction = Down
-			g.beetle.currentSprite = downSprite1
-			g.beetle.y += g.beetle.speed
-			if g.beetle.y+tileSize > gameHeight {
-				g.beetle.y = gameHeight - tileSize
-			}
-		} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-			g.beetle.direction = Right
-			g.beetle.currentSprite = rightSprite1
-			g.beetle.x += g.beetle.speed
-			if g.beetle.x+tileSize > gameWidth {
-				g.beetle.x = gameWidth - tileSize
-			}
-		} else if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-			g.beetle.direction = Left
-			g.beetle.currentSprite = leftSprite1
-			g.beetle.x -= g.beetle.speed
-			if g.beetle.x < 0 {
-				g.beetle.x = 0
-			}
-		}
-
-		g.beetle.spriteUpdateFrameCount++
-		if g.beetle.spriteUpdateFrameCount > g.beetle.spriteFrameSwitchThreshold {
-			if g.beetle.currentSpriteNumber == 1 {
-				g.beetle.currentSpriteNumber = 2
-			} else if g.beetle.currentSpriteNumber == 2 {
-				g.beetle.currentSpriteNumber = 1
-			}
-			g.beetle.spriteUpdateFrameCount = 0
-		}
-	}
-
+	g.beetle.Update()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// ebitenutil.DebugPrint(screen, "Hello, World!")
+	// g.mapTileHandler.DrawAll(screen)
 	g.beetle.Draw(screen)
 }
 
@@ -171,8 +86,10 @@ func main() {
 
 	mapTileHandler := MapTileHandler{}
 	mapTileHandler.LoadMap()
+	mapTileHandler.LoadTileImages()
 
 	beetle := Beetle{character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}}
+	beetle.LoadImages()
 	g := Game{beetle: &beetle, mapTileHandler: &mapTileHandler}
 
 	if err := ebiten.RunGame(&g); err != nil {
