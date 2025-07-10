@@ -100,7 +100,8 @@ const (
 
 // the game has the main character beetle and the tiles
 type Game struct {
-	beetle *Beetle
+	beetle         *Beetle
+	mapTileHandler *MapTileHandler
 }
 
 func (g *Game) Update() error {
@@ -167,10 +168,12 @@ func main() {
 
 	ebiten.SetWindowSize(gameWidth, gameHeight)
 	ebiten.SetWindowTitle("Sapling by Aiden Egglin")
-	beetle := Beetle{character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}}
-	g := Game{beetle: &beetle}
+
 	mapTileHandler := MapTileHandler{}
 	mapTileHandler.LoadMap()
+
+	beetle := Beetle{character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}}
+	g := Game{beetle: &beetle, mapTileHandler: &mapTileHandler}
 
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
