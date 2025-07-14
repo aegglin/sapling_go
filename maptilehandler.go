@@ -16,7 +16,7 @@ type MapTileHandler struct {
 	mapTiles       [11]MapTile
 }
 
-func (mapTileHandler MapTileHandler) LoadMap() {
+func (mapTileHandler *MapTileHandler) LoadMap() {
 	contents, err := os.ReadFile("assets/maps/map1.txt")
 	if err != nil {
 		fmt.Println("Error reading file: ", err)
@@ -39,7 +39,7 @@ func (mapTileHandler MapTileHandler) LoadMap() {
 	}
 }
 
-func (mapTileHandler MapTileHandler) LoadTileImages() {
+func (mapTileHandler *MapTileHandler) LoadTileImages() {
 	var err error
 	grass, _, err = ebitenutil.NewImageFromFile("assets/tiles/Grass.png")
 	if err != nil {
@@ -119,16 +119,21 @@ func (mapTileHandler MapTileHandler) LoadTileImages() {
 	mapTileHandler.mapTiles[10] = treeWoodpeckerTile
 }
 
-func (mapTileHandler MapTileHandler) DrawAll(screen *ebiten.Image) {
+func (mapTileHandler *MapTileHandler) DrawAll(screen *ebiten.Image) {
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(imageScale, imageScale)
 
 	for row := range numWorldRows {
 		for col := range numWorldColumns {
-			op.GeoM.Translate(float64(row), float64(col))
+			// fmt.Printf("row: %d, column: %d", row, col)
+			fmt.Printf("%f, %f\n", float64(row)*tileSize, float64(col)*tileSize)
+			op.GeoM.Translate(float64(row)*tileSize, float64(col)*tileSize)
+
 			mapTileNumber := mapTileHandler.mapTileNumbers[row][col]
+			// fmt.Println("mapTileNumber: ", mapTileNumber)
 			image := mapTileHandler.mapTiles[mapTileNumber]
+			// fmt.Println("image: ", image)
 			screen.DrawImage(image.Image, op)
 		}
 	}

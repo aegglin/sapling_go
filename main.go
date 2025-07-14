@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"image/color"
 	_ "image/png"
 	"log"
 
@@ -49,15 +51,6 @@ var (
 	treeWoodpecker1 *ebiten.Image
 )
 
-type Direction int
-
-const (
-	Up Direction = iota
-	Down
-	Left
-	Right
-)
-
 // the game has the main character beetle and the tiles
 type Game struct {
 	beetle         *Beetle
@@ -71,8 +64,11 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// ebitenutil.DebugPrint(screen, "Hello, World!")
-	// g.mapTileHandler.DrawAll(screen)
+	fmt.Println("Starting drawing")
+	screen.Fill(color.White)
+	g.mapTileHandler.DrawAll(screen)
 	g.beetle.Draw(screen)
+	fmt.Println("Done drawing")
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -84,13 +80,18 @@ func main() {
 	ebiten.SetWindowSize(gameWidth, gameHeight)
 	ebiten.SetWindowTitle("Sapling by Aiden Egglin")
 
-	mapTileHandler := MapTileHandler{}
+	fmt.Println("creating map handler")
+	mapTileHandler := &MapTileHandler{}
 	mapTileHandler.LoadMap()
 	mapTileHandler.LoadTileImages()
+	fmt.Println("Done creating map handler")
+
+	// fmt.Println(mapTileHandler.mapTileNumbers)
+	// fmt.Println(mapTileHandler.mapTiles)
 
 	beetle := Beetle{character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}}
 	beetle.LoadImages()
-	g := Game{beetle: &beetle, mapTileHandler: &mapTileHandler}
+	g := Game{beetle: &beetle, mapTileHandler: mapTileHandler}
 
 	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
