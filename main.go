@@ -23,17 +23,6 @@ const (
 	numWorldRows    = 50
 )
 
-var (
-	upSprite1    *ebiten.Image
-	downSprite1  *ebiten.Image
-	rightSprite1 *ebiten.Image
-	leftSprite1  *ebiten.Image
-	upSprite2    *ebiten.Image
-	downSprite2  *ebiten.Image
-	rightSprite2 *ebiten.Image
-	leftSprite2  *ebiten.Image
-)
-
 func init() {}
 
 var (
@@ -81,8 +70,9 @@ func main() {
 	mapTileHandler.LoadMap()
 	mapTileHandler.LoadTileImages()
 
-	beetle := Beetle{character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, currentSprite: leftSprite1, spriteFrameSwitchThreshold: 12}}
+	beetle := Beetle{character{x: 50, y: 50, direction: Up, speed: 4, currentSpriteNumber: 1, spriteFrameSwitchThreshold: 12}}
 	beetle.LoadImages()
+	beetle.currentSprite = beetle.downSprite1
 	g := Game{beetle: &beetle, mapTileHandler: mapTileHandler}
 
 	if err := ebiten.RunGame(&g); err != nil {
