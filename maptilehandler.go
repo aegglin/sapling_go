@@ -11,6 +11,20 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+var (
+	grass           *ebiten.Image
+	tree1           *ebiten.Image
+	tree2           *ebiten.Image
+	tree3           *ebiten.Image
+	shrub           *ebiten.Image
+	underbrush      *ebiten.Image
+	shrubUnderbrush *ebiten.Image
+	orangeFlower    *ebiten.Image
+	treeFlies1      *ebiten.Image
+	treeBeehive1    *ebiten.Image
+	treeWoodpecker1 *ebiten.Image
+)
+
 type MapTileHandler struct {
 	mapTileNumbers [numWorldRows][numWorldColumns]int
 	mapTiles       [11]*MapTile
