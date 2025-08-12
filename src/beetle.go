@@ -63,35 +63,35 @@ func (beetle *Beetle) Update() {
 func (beetle *Beetle) LoadImages() {
 	var err error
 
-	beetle.upSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp1.png")
+	beetle.upSprite1, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleUp1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	beetle.downSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleDown1.png")
+	beetle.downSprite1, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleDown1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	beetle.rightSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleRight1.png")
+	beetle.rightSprite1, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleRight1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	beetle.leftSprite1, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleLeft1.png")
+	beetle.leftSprite1, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleLeft1.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	beetle.upSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleUp2.png")
+	beetle.upSprite2, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleUp2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	beetle.downSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleDown2.png")
+	beetle.downSprite2, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleDown2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	beetle.rightSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleRight2.png")
+	beetle.rightSprite2, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleRight2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
-	beetle.leftSprite2, _, err = ebitenutil.NewImageFromFile("assets/beetle/BeetleLeft2.png")
+	beetle.leftSprite2, _, err = ebitenutil.NewImageFromFile("../assets/beetle/BeetleLeft2.png")
 	if err != nil {
 		log.Fatal(err)
 	}
